@@ -37,23 +37,48 @@ GxEPD2_3C<GxEPD2_154c, GxEPD2_154c::HEIGHT> display(GxEPD2_154c(15,17,16,4));
 GxIO_Class io(SPI, /*CS=5*/ 15, /*DC=*/ 17, /*RST=*/ 16); // arbitrary selection of 17, 16
 GxEPD_Class display(io, /*RST=*/ 16, /*BUSY=*/ 4); // arbitrary selection of (16), 4
 
+//Temperatursensoren
+#include <OneWire.h>
+#include <DallasTemperature.h>
+#define ONE_WIRE_BUS 25
+
+OneWire oneWire(ONE_WIRE_BUS);
+DallasTemperature sensors(&oneWire);
+
+float Celcius=0;
 
 void setup() {
 
   
   Serial.begin(115200);
+  sensors.begin();
+  
   Serial.println();
   Serial.println("setup");
   
   delay(100);
   display.init(115200);
+}
 
-  display.fillScreen(GxEPD_WHITE);
+
+void loop() {
+
+  sensors.requestTemperatures();
+  Celcius = sensors.getTempCByIndex(0);
+  Serial.print(" C  ");
+  Serial.println(Celcius);
+  
+  showScreen();
+  delay(30000);
+}
+
+void showScreen() {
+    display.fillScreen(GxEPD_WHITE);
   
   display.setTextColor(GxEPD_BLACK);
   display.setCursor(0, 39);
   display.setFont(&Lato_Bold_60);
-  display.print("25,2");
+  display.print(String(Celcius,1));
   
   display.setTextColor(GxEPD_RED);
   display.setCursor(125, 35);
@@ -93,11 +118,4 @@ void setup() {
   display.setTextColor(GxEPD_BLACK);
   display.print("51cm / 16C");
   display.update();
-  delay(5000);
-}
-
-
-void loop() {
-  // put your main code here, to run repeatedly:
-
 }
