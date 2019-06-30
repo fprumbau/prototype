@@ -49,7 +49,7 @@ float Celcius=0;
 
 void setup() {
 
-  
+  pinMode(ONE_WIRE_BUS,INPUT_PULLUP); 
   Serial.begin(115200);
   sensors.begin();
   
@@ -64,12 +64,14 @@ void setup() {
 void loop() {
 
   sensors.requestTemperatures();
+  delay(3000);
   Celcius = sensors.getTempCByIndex(0);
   Serial.print(" C  ");
   Serial.println(Celcius);
   
-  showScreen();
-  delay(30000);
+  //showScreen();
+  delay(1000);
+  //delay(30000);
 }
 
 void showScreen() {

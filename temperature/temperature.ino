@@ -3,7 +3,11 @@
 //Temperatursensoren
 #include <OneWire.h>
 #include <DallasTemperature.h>
-#define ONE_WIRE_BUS 5
+#define ONE_WIRE_BUS 10
+
+#include "MedianFilter.h"
+
+MedianFilter filter(5, 5);
 
 OneWire oneWire(ONE_WIRE_BUS);
 DallasTemperature sensors(&oneWire);
@@ -26,9 +30,17 @@ void setup() {
 void loop() {
 
   sensors.requestTemperatures();
-  Celcius = sensors.getTempCByIndex(0);
+  delay(750);
+
+  float helo = sensors.getTempCByIndex(0);
+  float next =  helo * 10;
+  filter.in(next);
+  Celcius = (filter.out() / 10.0);
+
   Serial.print(" C  ");
-  Serial.println(Celcius);
+  Serial.print(Celcius, 1);
+  Serial.print("   ");
+  Serial.println(helo, 1);
   
-  delay(3000);
+
 }
